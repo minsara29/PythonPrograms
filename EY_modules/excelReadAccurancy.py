@@ -24,7 +24,7 @@ def find_accuracy(actual, predicted):
 
 
 #read the xlsx file
-file_name = "data\\transcripts_july14.xlsx"
+file_name = "../EY_POC/data\\transcripts_july14.xlsx"
 excel = pd.read_excel(file_name, sheet_name=None)
 
 #processing the records

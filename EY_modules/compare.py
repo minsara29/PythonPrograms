@@ -8,10 +8,19 @@ def similar(actual, predicted):
     :param predicted: Str
     :return: accuracy: float - percentage
     """
+    actual = "".join(e for e in actual if e.isalnum())
+    predicted = "".join(e for e in predicted if e.isalnum())
+
+    print(actual)
+    print(predicted)
     return SequenceMatcher(None, actual, predicted).ratio() * 100
 
 #word by word comparison
 def find_accuracy(actual, predicted):
+
+    actual = "".join(e for e in actual if e.isalnum())
+    predicted = "".join(e for e in predicted if e.isalnum())
+
     s1 = actual.replace(".", "").replace(",", "").replace("'", "").replace('"', "").split()
     s2 = predicted.replace(".", "").replace(",", "").replace("'", "").replace('"', "").split()
     count = 0
@@ -24,7 +33,7 @@ def find_accuracy(actual, predicted):
 
 
 #read the xlsx file
-file_name = "data\\transcripts_july141.csv"
+file_name = "../EY_POC/data\\transcripts_july141.csv"
 
 excel = pd.read_csv(file_name,  encoding='utf8')
 
@@ -79,6 +88,6 @@ text2 = """and I understand you feel you've done a great job on this project. Le
 
 result = similar(text1, text2)
 print(result)
-accuracy = find_accuracy(text1, text2)
-print(accuracy)
+# accuracy = find_accuracy(text1, text2)
+# print(accuracy)
 
