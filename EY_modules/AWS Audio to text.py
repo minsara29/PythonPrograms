@@ -14,8 +14,8 @@ import json
 
 
 transcribe_client = boto3.client('transcribe',
-                                 aws_access_key_id='AKIASIOCBXZYGMIOP24P',
-                                 aws_secret_access_key='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',
+                                 aws_access_key_id='',
+                                 aws_secret_access_key='',
                                  region_name="us-east-2")
 
 
