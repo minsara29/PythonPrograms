@@ -1,18 +1,31 @@
 import configparser
-from datetime import datetime
-
 import pyodbc
 
+INSERT_TestingResults = '''
+       INSERT INTO dbo.TestingResults 
+              (Id, TranscriptId, ModelId, IntentTraverse, IntentName, Result, Score, ProcessingTime, Version, CreatedAt)
+       VALUES
+              (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+       '''
 
-insert_query_testing_results = '''
-                               INSERT INTO dbo.TestingResults 
-                               (id, scene_id, model_id, transcript_id, intent_traverse, intent_name, result, score, processing_time, version, created_at)
-                               VALUES
-                               (newid(), newid(), newid(), newid(), ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                               '''
+SELECT_TestingLabeledData = '''
+        SELECT DISTINCT ld.Id, ld.SceneId, ld.Transcript
+          FROM dbo.LabeledData as ld  
+         INNER JOIN dbo.TestingLabeledData AS tld
+            ON (ld.Id = tld.TranscriptId)
+       '''
 
+# '''
+#         SELECT DISTINCT tld.TranscriptId, tld.SceneId, ld.Transcript
+#           FROM dbo.TestingLabeledData AS tld
+#          INNER JOIN dbo.LabeledData AS ld
+#             ON (tld.TranscriptId = ld.Id)
+# '''
 
 class PowerBiDB(object):
+    """
+    Python SQL functions for PowerBiDB
+    """
     _instance = None
 
     def __new__(cls):
@@ -33,38 +46,124 @@ class PowerBiDB(object):
         self.conn = self._instance.conn
         self.cursor = self._instance.cursor
 
-    def update_test_results(self, values):
+    def update_test_results(self, result):
+        """
+        Update the ML Model candidate's results in TestingLabeledData tables .
 
-        values = PowerBiDB.validate_values(values)
+        Parameters:
+        result (dict or list of dict): ML Moles candidate's result
 
+        Returns:
+        Boolean: return true if insert successful, otherwise false
+        """
+        values = self.validate_values(result)
         try:
             for value in values:
-                print(value)
-                result = self.cursor.execute(insert_query_testing_results, value)
+                self.cursor.execute(INSERT_TestingResults, value)
             self.conn.commit()
         except pyodbc.Error as ex:
             print(f"Error while inserting value:{value} into 'TestingResults': {ex}")
+            return False
         else:
-            return result
+            return True
 
-    def get_test_results(self):
+    def fetchall_testing_data(self):
+        """
+        Get all testing labeled records from table 'TestingLabeledData'
+
+        Parameters:
+        None
+
+        Returns:
+        list(dict): return all records from TestingLabeledData
+        """
         try:
-            row = self.cursor.fetchone()
-            while row:
-                print(str(row[0]) + " " + str(row[1]))
-                row = self.cursor.fetchone()
-
-
+            self.cursor.execute(SELECT_TestingLabeledData)
+            rows = self.cursor.fetchall()
         except pyodbc.Error as ex:
-            print(f"Error while inserting into SQL server: {ex}")
+            print(f"Error while selecting from 'TestingLabeledData' : {ex}")
 
-    def __del__(self):
-        self.cursor.close()
-        self.conn.close()
+        return self.dict_data(rows)
 
+    def fetchone_testing_data(self):
+        """
+        Get only one testing labeled records from table 'TestingLabeledData'
+
+        Parameters:
+        None
+
+        Returns:
+        list(dict): return only one record from TestingLabeledData
+        """
+        try:
+            self.cursor.execute(SELECT_TestingLabeledData)
+            row = self.cursor.fetchone()
+        except pyodbc.Error as ex:
+            print(f"Error while selecting from 'TestingLabeledData' : {ex}")
+
+        return self.dict_data([row])
+
+    def dict_data(self, rows):
+        """
+        Convert the tables' records into list of dict format
+
+        Parameters:
+        tuple: values in tuple
+
+        Returns:
+        list(dict): return in list of dict
+        """
+        data = []
+        for row in rows:
+            data.append({
+                'TranscriptId': row[0],
+                'SceneId': row[1],
+                'Transcript': row[2]
+            })
+        return data
+
+    def validate_values(self, values):
+        """
+        Validate the table's data
+
+        Parameters:
+        list(dict)/dict: values in tuple
+
+        Returns:
+        tuple: query placeholder
+        """
+        if isinstance(values, list):
+            pass
+        elif isinstance(values, dict):
+            values = [values]
+        else:
+            raise ValueError(f'Invalid format: {type(values)}. Results should be either dict or list of Dict !!!')
+
+        values_in_tuple = []
+        for value in values:
+            try:
+                transcript_id = value['TranscriptId']
+                model_id = value['ModelId']
+            except KeyError as e:
+                print(f'{e} must provided for insertion')
+            new_id = self._get_uniqueidentifier()
+            values_in_tuple.append(
+                (new_id, transcript_id, model_id, value.get('IntentTraverse'), value.get('IntentName'), value.get('Result'),
+                 value.get('Score'), value.get('ProcessingTime'), value.get('Version'))
+            )
+        return values_in_tuple
 
     @staticmethod
     def get_config():
+        """
+        Validate the table's data
+
+        Parameters:
+        None
+
+        Returns:
+        dict: PowerBi DB configuration details
+        """
         config = configparser.ConfigParser()
         config.read('db.ini')
 
@@ -77,43 +176,45 @@ class PowerBiDB(object):
         }
         return env
 
-    @staticmethod
-    def validate_values(values):
-        if isinstance(values, list):
-            pass
-        elif isinstance(values, dict):
-            values = [values]
-        else:
-            raise ValueError('Invalid parameters!!!')
+    def _get_uniqueidentifier(self):
+        try:
+            self.cursor.execute("SELECT NEWID() as id")
+            unique = self.cursor.fetchone()
+            print(unique.id)
+            return str(unique.id)
 
-        values_in_tuple = []
-        for value in values:
-            values_in_tuple.append(
-                # (value['scene_id'], value['model_id'], value['transcript_id'], value['intent_traverse'], value['intent_name'], value['result'], value['score'], value['processing_time'],
-                (value['intent_traverse'], value['intent_name'], value['result'], value['score'], value['processing_time'],
-                 value['version'])
-            )
-        return values_in_tuple
+        except pyodbc.Error as ex:
+            print(f"Error while getting UniqueIdentifier' : {ex}")
+
+    def __del__(self):
+        self.cursor.close()
+        self.conn.close()
+
+    def __str__(self):
+        return f"PowerBiDB SQL Operation "
 
 
 if __name__ == '__main__':
 
     results_value = {
-        'scene_id': None,
-        'model_id': None,
-        'transcript_id': None,
-        'intent_traverse': 3,
-        'intent_name': None,
-        'result': None,
-        'score': 0.20,
-        'processing_time': None,
-        'version': None
+        'TranscriptId': 'E89C4C5B-412D-434C-A7B6-02E92CD8FEAA',
+        'SceneId': 'D74B9A51-F7B1-4CA3-BCF5-C3B27C4ECB2E',
+        'ModelId': 1,
+        'IntentTraverse': 3,
+        'IntentName': str(('intent1', 'intent2')),
+        'Result': '(0, 0)',
+        'Score': 0.20,
+        'ProcessingTime': '00:00:05',
+        'Version': 1
     }
-
     # 'intent_name': ['Meaning', 'Sentence', 'Keyword'],
     # 'result': [0.20, 0.50, 0.20],
-
+    # results_value = "kannan"
     db = PowerBiDB()
-    db.update_test_results(values=results_value)
-
+    # results = db.fetchall_testing_data()
+    # print(results)
+    db.update_test_results(result=results_value)
+    #
+    # results = db.fetchone_testing_data()
+    # print(results)
 
