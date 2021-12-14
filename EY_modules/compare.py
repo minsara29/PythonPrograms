@@ -8,21 +8,37 @@ def similar(actual, predicted):
     :param predicted: Str
     :return: accuracy: float - percentage
     """
+<<<<<<< Updated upstream
     actual = "".join(e for e in actual if e.isalnum())
     predicted = "".join(e for e in predicted if e.isalnum())
 
     print(actual)
     print(predicted)
+=======
+
+    # actual = "".join(e for e in actual if e.isalnum())
+    actual = actual.translate({ord(c): " " for c in "'!@#$%^&*()’[]{};:,./<>?\|`~-=_+"})
+    # actual = "".join(e for e in actual if e.isalnum())
+
+    print(actual)
+    # print(predicted)
+>>>>>>> Stashed changes
     return SequenceMatcher(None, actual, predicted).ratio() * 100
 
 #word by word comparison
 def find_accuracy(actual, predicted):
 
     actual = "".join(e for e in actual if e.isalnum())
+<<<<<<< Updated upstream
     predicted = "".join(e for e in predicted if e.isalnum())
 
     s1 = actual.replace(".", "").replace(",", "").replace("'", "").replace('"', "").split()
     s2 = predicted.replace(".", "").replace(",", "").replace("'", "").replace('"', "").split()
+=======
+    actual = "".join(e for e in actual if e.isalnum())
+    s1 = actual.split()
+    s2 = predicted.split()
+>>>>>>> Stashed changes
     count = 0
     for diff in ndiff(s1, s2):
         if '-' in diff:
