@@ -92,3 +92,5 @@ git commit --amend # amend the commit message, will be useful when multiple mess
 
 # Branching
 
+#checking the conflict messages 
+
