@@ -1,0 +1,11 @@
+name: database-migrations
+
+channels:
+  - default
+
+dependencies:
+  - python=3.8
+  - sqlalchemy
+  - psychopg
+  - alembic
+

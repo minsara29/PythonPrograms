@@ -1,4 +1,4 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Column, String, Integer, DATETIME, create_engine
 from datetime import datetime
 
@@ -7,9 +7,10 @@ connection_str = "sqlite:///C:\\Users\\ktamilraj\\Documents\\GitHub\\PythonProgr
 Base = declarative_base()
 
 engine = create_engine(connection_str, echo=True)
+Session = sessionmaker()
 
-class Users(Base):
-    __tablename__= "Users"
+class User(Base):
+    __tablename__ = "Users"
 
     id = Column(Integer(), primary_key=True)
     name = Column(String(25), nullable=False)

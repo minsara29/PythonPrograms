@@ -1,3 +1,3 @@
-from main import Users, Base, engine
+from main import User, Base, engine
 
 Base.metadata.create_all(engine)

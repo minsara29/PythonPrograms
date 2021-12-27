@@ -1,0 +1,41 @@
+Config & enable colors
+git config
+git config --global color.ui auto
+
+
+#INIT
+ #make working directory as git repo directory
+git init .
+
+
+#add file into staging area
+git add . # add everything from current directory
+git add file name
+git add -A # add all files and folder into staging area
+
+#remove file from staging area
+git rm --cached filename
+git rm -r --cached .
+
+
+# Commits
+git commit -m "commit messages"
+
+#log
+
+git log # shows the commit log details 
+
+
+git add filename # add file to git
+
+git diff filename # to view the changed lines + , -
+
+git add -p filename # patch level # splited the file into now and later commit based on the changes
+
+git commit # will open the file to write a message
+
+git commit --amend # amend the commit message, will be useful when multiple message
+
+
+# Branching
+

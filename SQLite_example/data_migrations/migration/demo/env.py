@@ -38,6 +38,7 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
+    # url = "C:\Users\ktamilraj\Documents\GitHub\PythonPrograms\SQLite_example\example.db"
     context.configure(
         url=url,
         target_metadata=target_metadata,

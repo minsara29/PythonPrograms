@@ -1,11 +1,21 @@
 from main import Session, engine, User
-from sqlalchemy import select
+from sqlalchemy import select, update
+
+# with Session(bind=engine) as session:
+#     user = session.query(User) \
+#                 .filter(User.name == "Kannan")\
+#                 .first() # get one row
+#                 # .all() # querying all
+#
+#     user.name = "Pranav"
+#     session.commit()
+
 
 with Session(bind=engine) as session:
-    users = session.query(User) \
+    user = session.query(User) \
                 .filter(User.name == "Kannan")\
-                #.first() # get one row
+                .first() # get one row
                 # .all() # querying all
 
-for user in users:
-    print(user.name)
+    user.name = "Pranav"
+    session.commit()
