@@ -20,10 +20,63 @@ git rm -r --cached .
 
 # Commits
 git commit -m "commit messages"
+git commit --amend -m "override the commit message"
 
 #log
+git log # shows the commit log details
 
-git log # shows the commit log details 
+
+#restore
+git restore filename #will restore the last commit changes
+
+
+#push
+
+git remote add origin github.com/remoterepo.git
+git branch -M main # change the branch master to main
+git push -u origin main # (first time only)
+git push # push local files to remote repo
+
+git push -u origin test #other local branch
+
+
+
+#pull
+git pull #pull all changes from remote
+
+
+#branch
+git branch #local branch
+git branch -r #remote branch
+git branch -a (local and remote )
+git branch new-one
+git branch d another-one #delete the Branch
+
+
+#checkout
+git checkout new-one
+git checkout - #switch to previous branch
+
+git checkout -b second #create a new branch and checkout
+
+
+#merge
+git merge test #be in main or where you want to merge
+
+
+#log
+git log --oneline #oneline log commit information
+
+
+#resolve conflicts
+
+
+
+
+
+
+
+
 
 
 git add filename # add file to git
