@@ -69,11 +69,48 @@ git log --oneline #oneline log commit information
 
 
 #resolve conflicts
+#manully do it in vscode
+#head is current change
+
+git pull --rebase origin main #get all recent changes from main
+git --rebase --continue
+git push -f
 
 
+# merge future branch with main
+# main -  m1 m2 m3
+# future - m2 f1 f2
+
+(main) git merge --squash feature  # all future commits merged to single
+git commit -m "main and future branch"
+
+git rebash main
+
+#stash ( temporarily hide/hold current changes )
+# https://www.youtube.com/watch?v=KLEDKgMmbBI
+
+git stash save "worked on add functions" #all changes made will get hide
+git stash list # to view all stash changes
+git stash apply <stash@{0}> # to bring the changes from stash list # retain in list
+git checkout -- . #to back to without stash changes once applied stash apply
+
+git stash pop #pop from list and scratch from list
+git stash drop <stash@{0}>
+git stash clear #drop all stash
+#stash will corry over the changed from one branch to another branch
+#if mistakenly did changes in one branch instead of another one, then stash will carryover those changes to where we need it
+git stash save "worked on add functions" #all changes made will get hide. so nothing there to commit
+git checkout future
+git stash pop
+git diff
+git add .
+git commit
 
 
-
+# combine Commit changes
+# commits E(Head), D, C, B, A
+git rebase -i HEAD~4 # e to b merge
+git commit --amend -e #Change the commit message after committed
 
 
 
