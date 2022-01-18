@@ -17,10 +17,12 @@ class User(Base):
     email = Column(String(80), unique=True, nullable=False)
     created_at = Column(DATETIME(), default=datetime.now())
 
+
     def __repr__(self):
         return f"<Users name={Users.name} email={Users.email}>"
 
 
-#User.__tablename__
+# User.__tablename__
+
 #User.__table__ # table metadata
 

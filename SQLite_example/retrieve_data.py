@@ -8,5 +8,18 @@ with Session(bind=engine) as session:
                 #.first() # get one row
 
 
+def row2dict(row):
+    d = {}
+    for column in row.__table__.columns:
+        d[column.name] = str(getattr(row, column.name))
+
+    return d
+
 for user in users:
     print(user.name)
+
+for user in users:
+    d = row2dict(user)
+    print(d)
+
+
